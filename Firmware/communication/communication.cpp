@@ -109,7 +109,19 @@ public:
     void enter_dfu_mode_helper() { enter_dfu_mode(); }
     float get_oscilloscope_val(uint32_t index) { return oscilloscope[index]; }
     float get_adc_voltage_(uint32_t gpio) { return get_adc_voltage(get_gpio_port_by_pin(gpio), get_gpio_pin_by_pin(gpio)); }
-    int32_t test_function(int32_t delta) { static int cnt = 0; return cnt += delta; }
+    int32_t test_function(int32_t delta) { static int cnt = 0; return cnt += 2*delta; }
+    float get_encoders(float current0) {
+      axes[0]->controller_.set_current_setpoint(current0);
+      return axes[0]->encoder_.pos_estimate_;
+    }
+    encoder_measurements_t get_encoders_struct(current_command_t current_cmd){
+        encoder_measurements_t meas;
+        meas.encoder_pos_axis0 = axes[0]->encoder_.pos_estimate_;
+        meas.encoder_vel_axis0 = axes[0]->encoder_.vel_estimate_;
+        meas.encoder_pos_axis1 = axes[1]->encoder_.pos_estimate_;
+        meas.encoder_vel_axis1 = axes[1]->encoder_.vel_estimate_;
+        return meas;
+    }
 } static_functions;
 
 // When adding new functions/variables to the protocol, be careful not to
@@ -173,6 +185,8 @@ static inline auto make_obj_tree() {
         make_protocol_object("can", can1_ctx.make_protocol_definitions()),
         make_protocol_property("test_property", &test_property),
         make_protocol_function("test_function", static_functions, &StaticFunctions::test_function, "delta"),
+        make_protocol_function("get_encoders", static_functions, &StaticFunctions::get_encoders, "current0"),
+        make_protocol_function("get_encoders_struct", static_functions, &StaticFunctions::get_encoders_struct, "current_cmd"),
         make_protocol_function("get_oscilloscope_val", static_functions, &StaticFunctions::get_oscilloscope_val, "index"),
         make_protocol_function("get_adc_voltage", static_functions, &StaticFunctions::get_adc_voltage_, "gpio"),
         make_protocol_function("save_configuration", static_functions, &StaticFunctions::save_configuration_helper),
@@ -199,7 +213,7 @@ void communication_task(void * ctx) {
 
     // Allow main init to continue
     endpoint_list_valid = true;
-    
+
     start_uart_server();
     start_usb_server();
     if (board_config.enable_i2c_instead_of_can) {

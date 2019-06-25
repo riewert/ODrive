@@ -82,6 +82,18 @@ typedef struct {
     uint16_t endpoint_id;
 } endpoint_ref_t;
 
+typedef struct {
+    float current_axis0;
+    float current_axis1;
+} current_command_t;
+
+typedef struct {
+    float encoder_pos_axis0;
+    float encoder_vel_axis0;
+    float encoder_pos_axis1;
+    float encoder_vel_axis1;
+} encoder_measurements_t;
+
 #include <cstring>
 
 template<typename T, typename = typename std::enable_if_t<!std::is_const<T>::value>>
@@ -397,6 +409,31 @@ bool default_readwrite_endpoint_handler(endpoint_ref_t* value, const uint8_t* in
     }
 }
 
+// @brief Default endpoint handler for current_command_t types
+template<typename T>
+bool default_readwrite_endpoint_handler(current_command_t* value, const uint8_t* input, size_t input_length, StreamSink* output) {
+    constexpr size_t size = sizeof(value->current_axis0) + sizeof(value->current_axis1);
+    if (output) {
+        // TODO: make buffer size dependent on the type
+        uint8_t buffer[size];
+        size_t cnt = write_le<decltype(value->current_axis0)>(value->current_axis0, buffer);
+        cnt += write_le<decltype(value->current_axis1)>(value->current_axis1, buffer + cnt);
+        if (cnt <= output->get_free_space())
+            output->process_bytes(buffer, cnt, nullptr);
+    }
+
+    // If a new value was passed, call the corresponding little endian deserialization function
+    if (input_length >= size) {
+        read_le<decltype(value->current_axis0)>(&value->current_axis0, input);
+        read_le<decltype(value->current_axis1)>(&value->current_axis1, input + 4); // TODO: check that 4 is correct
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+
 template<typename T>
 static inline const char* get_default_json_modifier();
 
@@ -467,6 +504,14 @@ inline constexpr const char* get_default_json_modifier<bool>() {
 template<>
 inline constexpr const char* get_default_json_modifier<endpoint_ref_t>() {
     return "\"type\":\"endpoint_ref\",\"access\":\"rw\"";
+}
+template<>
+inline constexpr const char* get_default_json_modifier<current_command_t>() {
+    return "\"type\":\"current_command\",\"access\":\"rw\"";
+}
+template<>
+inline constexpr const char* get_default_json_modifier<encoder_measurements_t>() {
+    return "\"type\":\"encoder_measurements\",\"access\":\"rw\"";
 }
 
 class Endpoint {
