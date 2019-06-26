@@ -427,7 +427,7 @@ bool default_readwrite_endpoint_handler(current_command_t* value, const uint8_t*
     // If a new value was passed, call the corresponding little endian deserialization function
     if (input_length >= size) {
         read_le<decltype(value->current_axis0)>(&value->current_axis0, input);
-        read_le<decltype(value->current_axis1)>(&value->current_axis1, input + 4); // TODO: check that 4 is correct
+        read_le<decltype(value->current_axis1)>(&value->current_axis1, input + sizeof(value->current_axis0)); 
         return true;
     } else {
         return false;
