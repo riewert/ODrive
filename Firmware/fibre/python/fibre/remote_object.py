@@ -88,6 +88,18 @@ class RemoteProperty():
             val_str = str(self.get_value())
         return "{} = {} ({})".format(self._name, val_str, self._property_type.__name__)
 
+class CurrentCommand():
+    def __init__(self, current_axis0, current_axis1):
+        self.current_axis0 = current_axis0
+        self.current_axis1 = current_axis1
+
+class EncoderMeasurement():
+    def __init__(self, encoder_pos_axis0, encoder_vel_axis0, encoder_pos_axis1, encoder_vel_axis1):
+        self.encoder_pos_axis0 = encoder_pos_axis0
+        self.encoder_vel_axis0 = encoder_vel_axis0
+        self.encoder_pos_axis1 = encoder_pos_axis1
+        self.encoder_vel_axis1 = encoder_vel_axis1
+
 class EndpointRefCodec():
     """
     Serializer/deserializer for an endpoint reference
@@ -104,6 +116,40 @@ class EndpointRefCodec():
         return struct.pack("<HH", ep_id, ep_crc)
     def deserialize(self, buffer):
         return struct.unpack("<HH", buffer)
+
+class CurrentCmdCodec():
+    """
+    Serializer/deserializer for a current command
+    """
+    def get_length(self):
+        return struct.calcsize("<ff")
+    def serialize(self, value):
+        if value is None:
+            (current_axis0, current_axis1) = (0, 0)
+        elif isinstance(value, CurrentCommand):
+            (current_axis0, current_axis1) = (value.current_axis0, value.current_axis1)
+        else:
+            raise TypeError("Expected value of type CurrentCommand or None but got '{}'.".format(type(value).__name__))
+        return struct.pack("<ff", current_axis0, current_axis1)
+    def deserialize(self, buffer):
+        return struct.unpack("<ff", buffer)
+
+class EncoderMeasCodec():
+    """
+    Serializer/deserializer for a current command
+    """
+    def get_length(self):
+        return struct.calcsize("<ffff")
+    def serialize(self, value):
+        if value is None:
+            (encoder_pos_axis0, encoder_vel_axis0, encoder_pos_axis1, encoder_vel_axis1) = (0, 0, 0, 0)
+        elif isinstance(value, EncoderMeasurement):
+            (encoder_pos_axis0, encoder_vel_axis0, encoder_pos_axis1, encoder_vel_axis1) = (value.encoder_pos_axis0, value.encoder_vel_axis0, value.encoder_pos_axis1, value.encoder_vel_axis1)
+        else:
+            raise TypeError("Expected value of type CurrentCommand or None but got '{}'.".format(type(value).__name__))
+        return struct.pack("<ffff", encoder_pos_axis0, encoder_vel_axis0, encoder_pos_axis1, encoder_vel_axis1)
+    def deserialize(self, buffer):
+        return struct.unpack("<ffff", buffer)
 
 codecs[int] = {
     'int8': StructCodec("<b", int),
@@ -125,7 +171,9 @@ codecs[float] = {
 }
 
 codecs[RemoteProperty] = {
-    'endpoint_ref': EndpointRefCodec()
+    'endpoint_ref': EndpointRefCodec(),
+    'current_command': CurrentCmdCodec(),
+    'encoder_measurements': EncoderMeasCodec()
 }
 
 

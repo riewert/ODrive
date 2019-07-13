@@ -82,6 +82,18 @@ typedef struct {
     uint16_t endpoint_id;
 } endpoint_ref_t;
 
+typedef struct {
+    float current_axis0;
+    float current_axis1;
+} current_command_t;
+
+typedef struct {
+    float encoder_pos_axis0;
+    float encoder_vel_axis0;
+    float encoder_pos_axis1;
+    float encoder_vel_axis1;
+} encoder_measurements_t;
+
 #include <cstring>
 
 template<typename T, typename = typename std::enable_if_t<!std::is_const<T>::value>>
@@ -344,7 +356,8 @@ typedef std::function<void(void* ctx, const uint8_t* input, size_t input_length,
 // @brief Default endpoint handler for const types
 // @return: True if endpoint was written to, False otherwise
 template<typename T>
-std::enable_if_t<!std::is_same<T, endpoint_ref_t>::value && std::is_const<T>::value, bool>
+std::enable_if_t<!std::is_same<T, endpoint_ref_t>::value && !std::is_same<T, current_command_t>::value &&
+                 !std::is_same<T, encoder_measurements_t>::value && std::is_const<T>::value, bool>
 default_readwrite_endpoint_handler(T* value, const uint8_t* input, size_t input_length, StreamSink* output) {
     // If the old value was requested, call the corresponding little endian serialization function
     if (output) {
@@ -359,7 +372,8 @@ default_readwrite_endpoint_handler(T* value, const uint8_t* input, size_t input_
 
 // @brief Default endpoint handler for non-const types
 template<typename T>
-std::enable_if_t<!std::is_same<T, endpoint_ref_t>::value && !std::is_const<T>::value, bool>
+std::enable_if_t<!std::is_same<T, endpoint_ref_t>::value && !std::is_same<T, current_command_t>::value &&
+                 !std::is_same<T, encoder_measurements_t>::value && !std::is_const<T>::value, bool>
 default_readwrite_endpoint_handler(T* value, const uint8_t* input, size_t input_length, StreamSink* output) {
     // Read the endpoint value into output
     default_readwrite_endpoint_handler<const T>(const_cast<const T*>(value), input, input_length, output);
@@ -396,6 +410,61 @@ bool default_readwrite_endpoint_handler(endpoint_ref_t* value, const uint8_t* in
         return false;
     }
 }
+
+// @brief Default endpoint handler for current_command_t types
+template<typename T>
+bool default_readwrite_endpoint_handler(current_command_t* value, const uint8_t* input, size_t input_length, StreamSink* output) {
+    constexpr size_t size = sizeof(value->current_axis0) + sizeof(value->current_axis1);
+    if (output) {
+        // TODO: make buffer size dependent on the type
+        uint8_t buffer[size];
+        size_t cnt = write_le<decltype(value->current_axis0)>(value->current_axis0, buffer);
+        cnt += write_le<decltype(value->current_axis1)>(value->current_axis1, buffer + cnt);
+        if (cnt <= output->get_free_space())
+            output->process_bytes(buffer, cnt, nullptr);
+    }
+
+    // If a new value was passed, call the corresponding little endian deserialization function
+    if (input_length >= size) {
+        read_le<decltype(value->current_axis0)>(&value->current_axis0, input);
+        read_le<decltype(value->current_axis1)>(&value->current_axis1, input + sizeof(value->current_axis0)); 
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// @brief Default endpoint handler for current_command_t types
+template<typename T>
+bool default_readwrite_endpoint_handler(encoder_measurements_t* value, const uint8_t* input, size_t input_length, StreamSink* output) {
+    constexpr size_t size = sizeof(value->encoder_pos_axis0) + sizeof(value->encoder_vel_axis0) +
+            sizeof(value->encoder_pos_axis1) + sizeof(value->encoder_vel_axis1);
+    if (output) {
+        // TODO: make buffer size dependent on the type
+        uint8_t buffer[size];
+        size_t cnt = write_le<decltype(value->encoder_pos_axis0)>(value->encoder_pos_axis0, buffer);
+        cnt += write_le<decltype(value->encoder_vel_axis0)>(value->encoder_vel_axis0, buffer + cnt);
+        cnt += write_le<decltype(value->encoder_pos_axis1)>(value->encoder_pos_axis1, buffer + cnt);
+        cnt += write_le<decltype(value->encoder_vel_axis1)>(value->encoder_vel_axis1, buffer + cnt);
+        if (cnt <= output->get_free_space())
+            output->process_bytes(buffer, cnt, nullptr);
+    }
+
+    // TODO: make input constant instead of ignoring write changes
+    // If a new value was passed, call the corresponding little endian deserialization function
+//    if (input_length >= size) {
+//        read_le<decltype(value->current_axis0)>(&value->current_axis0, input);
+//        read_le<decltype(value->current_axis1)>(&value->current_axis1, input + 4); // TODO: check that 4 is correct
+//        return true;
+//    } else {
+//        return false;
+//    }
+
+    // should never write to encoder_measurements
+    return false;
+}
+
+
 
 template<typename T>
 static inline const char* get_default_json_modifier();
@@ -467,6 +536,14 @@ inline constexpr const char* get_default_json_modifier<bool>() {
 template<>
 inline constexpr const char* get_default_json_modifier<endpoint_ref_t>() {
     return "\"type\":\"endpoint_ref\",\"access\":\"rw\"";
+}
+template<>
+inline constexpr const char* get_default_json_modifier<current_command_t>() {
+    return "\"type\":\"current_command\",\"access\":\"rw\"";
+}
+template<>
+inline constexpr const char* get_default_json_modifier<encoder_measurements_t>() {
+    return "\"type\":\"encoder_measurements\",\"access\":\"rw\"";
 }
 
 class Endpoint {
