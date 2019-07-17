@@ -6,7 +6,7 @@ class Endstop {
     struct Config_t {
         uint16_t gpio_num;
         bool enabled = false;
-        int32_t offset = 0;
+        int32_t offset = -50;
         bool is_active_high = false;
         float debounce_ms = 100.0f;
     };

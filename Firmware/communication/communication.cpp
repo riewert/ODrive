@@ -105,14 +105,32 @@ public:
     void enter_dfu_mode_helper() { enter_dfu_mode(); }
     float get_oscilloscope_val(uint32_t index) { return oscilloscope[index]; }
     float get_adc_voltage_(uint32_t gpio) { return get_adc_voltage(get_gpio_port_by_pin(gpio), get_gpio_pin_by_pin(gpio)); }
-    int32_t test_function(int32_t delta) { static int cnt = 0; return cnt += 2*delta; }
-    float get_encoders(float current0) {
-      axes[0]->controller_.set_current_setpoint(current0);
-      return axes[0]->encoder_.pos_estimate_;
+
+    encoder_measurements_t get_encoders_force(current_command_t current_cmd){
+        axes[0]->controller_.config_.control_mode = Controller::ControlMode_t::CTRL_MODE_CURRENT_CONTROL;
+        axes[0]->controller_.config_.input_mode = Controller::InputMode_t::INPUT_MODE_PASSTHROUGH;
+        axes[0]->controller_.input_current_ = current_cmd.current_axis0;
+        axes[1]->controller_.config_.control_mode = Controller::ControlMode_t::CTRL_MODE_CURRENT_CONTROL;
+        axes[0]->controller_.config_.input_mode = Controller::InputMode_t::INPUT_MODE_PASSTHROUGH;
+        axes[1]->controller_.input_current_ = current_cmd.current_axis1;
+
+        encoder_measurements_t meas;
+        meas.encoder_pos_axis0 = axes[0]->encoder_.pos_estimate_;
+        meas.encoder_vel_axis0 = get_adc_voltage_(3);
+        meas.encoder_pos_axis1 = axes[1]->encoder_.pos_estimate_;
+        meas.encoder_vel_axis1 = get_adc_voltage_(4);
+        return meas;
     }
-    encoder_measurements_t get_encoders_struct(current_command_t current_cmd){
-        axes[0]->controller_.set_current_setpoint(current_cmd.current_axis0);
-        axes[1]->controller_.set_current_setpoint(current_cmd.current_axis1);
+
+    encoder_measurements_t get_encoders_pos(current_command_t current_cmd){
+        axes[0]->controller_.config_.control_mode = Controller::ControlMode_t::CTRL_MODE_POSITION_CONTROL;
+        axes[0]->controller_.config_.input_mode = Controller::InputMode_t::INPUT_MODE_TRAP_TRAJ;
+        axes[0]->controller_.input_pos_ = current_cmd.current_axis0;
+        axes[0]->controller_.input_pos_updated();
+        axes[1]->controller_.config_.control_mode = Controller::ControlMode_t::CTRL_MODE_POSITION_CONTROL;
+        axes[1]->controller_.config_.input_mode = Controller::InputMode_t::INPUT_MODE_TRAP_TRAJ;
+        axes[1]->controller_.input_pos_ = current_cmd.current_axis1;
+        axes[1]->controller_.input_pos_updated();
 
         encoder_measurements_t meas;
         meas.encoder_pos_axis0 = axes[0]->encoder_.pos_estimate_;
@@ -186,9 +204,8 @@ static inline auto make_obj_tree() {
         make_protocol_object("axis1", axes[1]->make_protocol_definitions()),
         make_protocol_object("can", odCAN->make_protocol_definitions()),
         make_protocol_property("test_property", &test_property),
-        make_protocol_function("test_function", static_functions, &StaticFunctions::test_function, "delta"),
-        make_protocol_function("get_encoders", static_functions, &StaticFunctions::get_encoders, "current0"),
-        make_protocol_function("get_encoders_struct", static_functions, &StaticFunctions::get_encoders_struct, "current_cmd"),
+        make_protocol_function("get_encoders_force", static_functions, &StaticFunctions::get_encoders_force, "current_cmd"),
+        make_protocol_function("get_encoders_pos", static_functions, &StaticFunctions::get_encoders_pos, "current_cmd"),
         make_protocol_function("get_oscilloscope_val", static_functions, &StaticFunctions::get_oscilloscope_val, "index"),
         make_protocol_function("get_adc_voltage", static_functions, &StaticFunctions::get_adc_voltage_, "gpio"),
         make_protocol_function("save_configuration", static_functions, &StaticFunctions::save_configuration_helper),

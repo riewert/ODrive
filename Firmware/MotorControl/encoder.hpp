@@ -30,7 +30,7 @@ public:
     const uint32_t MODE_FLAG_ABS = 0x100;
 
     struct Config_t {
-        Encoder::Mode_t mode = Encoder::MODE_INCREMENTAL;
+        Encoder::Mode_t mode = Encoder::MODE_HALL;
         bool use_index = false;
         bool pre_calibrated = false; // If true, this means the offset stored in
                                     // configuration is valid and does not need
@@ -38,17 +38,17 @@ public:
                                     // In this case the encoder will enter ready
                                     // state as soon as the index is found.
         bool zero_count_on_find_idx = true;
-        int32_t cpr = (2048 * 4);   // Default resolution of CUI-AMT102 encoder,
+        int32_t cpr = 12; // (2048 * 4);   // Default resolution of CUI-AMT102 encoder,
         int32_t offset = 0;        // Offset between encoder count and rotor electrical phase
         float offset_float = 0.0f; // Sub-count phase alignment offset
         bool enable_phase_interpolation = true; // Use velocity to interpolate inside the count state
-        float calib_range = 0.02f; // Accuracy required to pass encoder cpr check
+        float calib_range = 1.0f; // 0.02f; // Accuracy required to pass encoder cpr check
         float calib_scan_distance = 16.0f * M_PI; // rad electrical
         float calib_scan_omega = 4.0f * M_PI; // rad/s electrical
         float bandwidth = 1000.0f;
         bool find_idx_on_lockin_only = false; // Only be sensitive during lockin scan constant vel state
         bool idx_search_unidirectional = false; // Only allow index search in known direction
-        bool ignore_illegal_hall_state = false; // dont error on bad states like 000 or 111
+        bool ignore_illegal_hall_state = true; // false; // dont error on bad states like 000 or 111
         uint16_t abs_spi_cs_gpio_pin = 0;
     };
 

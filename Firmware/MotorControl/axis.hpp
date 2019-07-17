@@ -69,10 +69,10 @@ public:
         bool startup_motor_calibration = false;   //<! run motor calibration at startup, skip otherwise
         bool startup_encoder_index_search = false; //<! run encoder index search after startup, skip otherwise
                                                 // this only has an effect if encoder.config.use_index is also true
-        bool startup_encoder_offset_calibration = false; //<! run encoder offset calibration after startup, skip otherwise
-        bool startup_closed_loop_control = false; //<! enable closed loop control after calibration/startup
+        bool startup_encoder_offset_calibration = true;// false; //<! run encoder offset calibration after startup, skip otherwise
+        bool startup_closed_loop_control = true; // false; //<! enable closed loop control after calibration/startup
         bool startup_sensorless_control = false; //<! enable sensorless control after calibration/startup
-        bool startup_homing = false; //<! enable homing after calibration/startup
+        bool startup_homing = true; // false; //<! enable homing after calibration/startup
         bool enable_step_dir = false; //<! enable step/dir input after calibration
                                     //   For M0 this has no effect if enable_uart is true
         float counts_per_step = 2.0f;
@@ -80,8 +80,8 @@ public:
         float watchdog_timeout = 0.0f; // [s] (0 disables watchdog)
 
         // Defaults loaded from hw_config in load_configuration in main.cpp
-        uint16_t step_gpio_pin = 0;
-        uint16_t dir_gpio_pin = 0;
+        uint16_t step_gpio_pin = 7; // 0;
+        uint16_t dir_gpio_pin = 8; // 0;
 
         LockinConfig_t calibration_lockin = default_calibration();
         LockinConfig_t sensorless_ramp = default_sensorless();
