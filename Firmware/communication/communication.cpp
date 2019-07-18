@@ -111,14 +111,17 @@ public:
         axes[0]->controller_.config_.input_mode = Controller::InputMode_t::INPUT_MODE_PASSTHROUGH;
         axes[0]->controller_.input_current_ = current_cmd.current_axis0;
         axes[1]->controller_.config_.control_mode = Controller::ControlMode_t::CTRL_MODE_CURRENT_CONTROL;
-        axes[0]->controller_.config_.input_mode = Controller::InputMode_t::INPUT_MODE_PASSTHROUGH;
+        axes[1]->controller_.config_.input_mode = Controller::InputMode_t::INPUT_MODE_PASSTHROUGH;
         axes[1]->controller_.input_current_ = current_cmd.current_axis1;
 
         encoder_measurements_t meas;
         meas.encoder_pos_axis0 = axes[0]->encoder_.pos_estimate_;
-        meas.encoder_vel_axis0 = get_adc_voltage_(3);
+        meas.gpio_axis0 = get_adc_voltage_(3);
+        meas.encoder_vel_axis0 = axes[0]->encoder_.vel_estimate_;
+        
         meas.encoder_pos_axis1 = axes[1]->encoder_.pos_estimate_;
-        meas.encoder_vel_axis1 = get_adc_voltage_(4);
+        meas.gpio_axis1 = get_adc_voltage_(4);
+        meas.encoder_vel_axis1 = axes[1]->encoder_.vel_estimate_;
         return meas;
     }
 
@@ -134,8 +137,11 @@ public:
 
         encoder_measurements_t meas;
         meas.encoder_pos_axis0 = axes[0]->encoder_.pos_estimate_;
+        meas.gpio_axis0 = get_adc_voltage_(3);
         meas.encoder_vel_axis0 = axes[0]->encoder_.vel_estimate_;
+        
         meas.encoder_pos_axis1 = axes[1]->encoder_.pos_estimate_;
+        meas.gpio_axis1 = get_adc_voltage_(4);
         meas.encoder_vel_axis1 = axes[1]->encoder_.vel_estimate_;
         return meas;
     }

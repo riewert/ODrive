@@ -92,6 +92,8 @@ typedef struct {
     float encoder_vel_axis0;
     float encoder_pos_axis1;
     float encoder_vel_axis1;
+    float gpio_axis0;
+    float gpio_axis1;
 } encoder_measurements_t;
 
 #include <cstring>
@@ -438,14 +440,17 @@ bool default_readwrite_endpoint_handler(current_command_t* value, const uint8_t*
 template<typename T>
 bool default_readwrite_endpoint_handler(encoder_measurements_t* value, const uint8_t* input, size_t input_length, StreamSink* output) {
     constexpr size_t size = sizeof(value->encoder_pos_axis0) + sizeof(value->encoder_vel_axis0) +
-            sizeof(value->encoder_pos_axis1) + sizeof(value->encoder_vel_axis1);
+            sizeof(value->encoder_pos_axis1) + sizeof(value->encoder_vel_axis1) +
+            sizeof(value->gpio_axis0) + sizeof(value->gpio_axis1);
     if (output) {
         // TODO: make buffer size dependent on the type
         uint8_t buffer[size];
         size_t cnt = write_le<decltype(value->encoder_pos_axis0)>(value->encoder_pos_axis0, buffer);
         cnt += write_le<decltype(value->encoder_vel_axis0)>(value->encoder_vel_axis0, buffer + cnt);
+        cnt += write_le<decltype(value->gpio_axis0)>(value->gpio_axis0, buffer + cnt);
         cnt += write_le<decltype(value->encoder_pos_axis1)>(value->encoder_pos_axis1, buffer + cnt);
         cnt += write_le<decltype(value->encoder_vel_axis1)>(value->encoder_vel_axis1, buffer + cnt);
+        cnt += write_le<decltype(value->gpio_axis1)>(value->gpio_axis1, buffer + cnt);
         if (cnt <= output->get_free_space())
             output->process_bytes(buffer, cnt, nullptr);
     }
