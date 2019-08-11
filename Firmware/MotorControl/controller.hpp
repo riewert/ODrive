@@ -50,7 +50,7 @@ public:
         float vel_integrator_gain = 0.0f;//10.0f / 10000.0f;  // [A/(counts/s * s)]
         float vel_limit = 4000.0f; //20000.0f;        // [counts/s]
         float vel_limit_tolerance = 1.2f;  // ratio to vel_lim. 0.0f to disable
-        float vel_ramp_rate = 10000.0f;  // [(counts/s) / s]
+        float vel_ramp_rate = 5000.0f;  // [(counts/s) / s]
         bool setpoints_in_cpr = false;
         float inertia = 0.0f;      // [A/(count/s^2)]
         float input_filter_bandwidth = 2.0f; // [1/s]
