@@ -318,10 +318,11 @@ bool Axis::run_closed_loop_control_loop() {
         if (homing_.homing_state == HOMING_STATE_HOMING) {
             if (min_endstop_.getEndstopState()) {
                 encoder_.set_linear_count(min_endstop_.config_.offset);
-                controller_.vel_setpoint_ = 0.0f;
                 controller_.config_.control_mode = Controller::CTRL_MODE_POSITION_CONTROL;
                 controller_.config_.input_mode = Controller::INPUT_MODE_TRAP_TRAJ;
 
+                controller_.vel_setpoint_ = 0.0f;
+                controller_.pos_setpoint_ = 0.0f;
                 controller_.input_pos_ = 0.0f;
                 controller_.input_pos_updated();
                 controller_.input_vel_ = 0.0f;
@@ -334,7 +335,6 @@ bool Axis::run_closed_loop_control_loop() {
                 controller_.config_.control_mode = homing_.storedControlMode;
                 controller_.config_.input_mode = homing_.storedInputMode;
                 homing_.homing_state = HOMING_STATE_IDLE;
-                homing_.isHomed = true;
             }
         } else {
             // Check for endstop presses
