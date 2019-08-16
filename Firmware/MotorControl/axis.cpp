@@ -322,7 +322,7 @@ bool Axis::run_closed_loop_control_loop() {
                 controller_.config_.input_mode = Controller::INPUT_MODE_TRAP_TRAJ;
 
                 controller_.vel_setpoint_ = 0.0f;
-                controller_.pos_setpoint_ = 0.0f;
+                controller_.pos_setpoint_ = min_endstop_.config_.offset;
                 controller_.input_pos_ = 0.0f;
                 controller_.input_pos_updated();
                 controller_.input_vel_ = 0.0f;
