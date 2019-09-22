@@ -127,11 +127,13 @@ public:
 
     encoder_measurements_t get_encoders_pos(current_command_t current_cmd){
         axes[0]->controller_.config_.control_mode = Controller::ControlMode_t::CTRL_MODE_POSITION_CONTROL;
-        axes[0]->controller_.config_.input_mode = Controller::InputMode_t::INPUT_MODE_TRAP_TRAJ;
+        // axes[0]->controller_.config_.input_mode = Controller::InputMode_t::INPUT_MODE_TRAP_TRAJ;
+        axes[0]->controller_.config_.input_mode = Controller::InputMode_t::INPUT_MODE_PASSTHROUGH;
         axes[0]->controller_.input_pos_ = current_cmd.current_axis0;
         axes[0]->controller_.input_pos_updated();
         axes[1]->controller_.config_.control_mode = Controller::ControlMode_t::CTRL_MODE_POSITION_CONTROL;
-        axes[1]->controller_.config_.input_mode = Controller::InputMode_t::INPUT_MODE_TRAP_TRAJ;
+        // axes[1]->controller_.config_.input_mode = Controller::InputMode_t::INPUT_MODE_TRAP_TRAJ;
+        axes[1]->controller_.config_.input_mode = Controller::InputMode_t::INPUT_MODE_PASSTHROUGH;
         axes[1]->controller_.input_pos_ = current_cmd.current_axis1;
         axes[1]->controller_.input_pos_updated();
 
