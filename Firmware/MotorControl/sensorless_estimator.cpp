@@ -1,7 +1,9 @@
 
 #include "odrive_main.h"
 
-SensorlessEstimator::SensorlessEstimator(Config_t& config) : config_(config){};
+SensorlessEstimator::SensorlessEstimator(Config_t& config) :
+        config_(config)
+    {};
 
 bool SensorlessEstimator::update() {
     // Algorithm based on paper: Sensorless Control of Surface-Mount Permanent-Magnet Synchronous Motors Based on a Nonlinear Observer
@@ -35,10 +37,10 @@ bool SensorlessEstimator::update() {
     }
 
     // Non-linear observer (see paper eqn 8):
-    float pm_flux_sqr      = config_.pm_flux_linkage * config_.pm_flux_linkage;
-    float est_pm_flux_sqr  = eta[0] * eta[0] + eta[1] * eta[1];
+    float pm_flux_sqr = config_.pm_flux_linkage * config_.pm_flux_linkage;
+    float est_pm_flux_sqr = eta[0] * eta[0] + eta[1] * eta[1];
     float bandwidth_factor = 1.0f / pm_flux_sqr;
-    float eta_factor       = 0.5f * (config_.observer_gain * bandwidth_factor) * (pm_flux_sqr - est_pm_flux_sqr);
+    float eta_factor = 0.5f * (config_.observer_gain * bandwidth_factor) * (pm_flux_sqr - est_pm_flux_sqr);
 
     // alpha-beta vector operations
     for (int i = 0; i <= 1; ++i) {
@@ -63,17 +65,19 @@ bool SensorlessEstimator::update() {
     // Check that we don't get problems with discrete time approximation
     if (!(current_meas_period * pll_kp < 1.0f)) {
         error_ |= ERROR_UNSTABLE_GAIN;
+        vel_estimate_valid_ = false;
         return false;
     }
 
     // predict PLL phase with velocity
     pll_pos_ = wrap_pm_pi(pll_pos_ + current_meas_period * vel_estimate_);
     // update PLL phase with observer permanent magnet phase
-    phase_            = fast_atan2(eta[1], eta[0]);
+    phase_ = fast_atan2(eta[1], eta[0]);
     float delta_phase = wrap_pm_pi(phase_ - pll_pos_);
-    pll_pos_          = wrap_pm_pi(pll_pos_ + current_meas_period * pll_kp * delta_phase);
+    pll_pos_ = wrap_pm_pi(pll_pos_ + current_meas_period * pll_kp * delta_phase);
     // update PLL velocity
     vel_estimate_ += current_meas_period * pll_ki * delta_phase;
 
+    vel_estimate_valid_ = true;
     return true;
 };
