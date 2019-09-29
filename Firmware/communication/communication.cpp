@@ -125,7 +125,10 @@ public:
         return meas;
     }
 
-    encoder_measurements_t get_encoders_pos(current_command_t current_cmd){
+    
+} static_functions;
+
+encoder_measurements_t get_encoders_pos(current_command_t current_cmd){
         axes[0]->controller_.config_.control_mode = Controller::ControlMode_t::CTRL_MODE_POSITION_CONTROL;
         // axes[0]->controller_.config_.input_mode = Controller::InputMode_t::INPUT_MODE_TRAP_TRAJ;
         axes[0]->controller_.config_.input_mode = Controller::InputMode_t::INPUT_MODE_PASSTHROUGH;
@@ -139,21 +142,21 @@ public:
 
         encoder_measurements_t meas;
         meas.encoder_pos_axis0 = axes[0]->encoder_.pos_estimate_;
-        meas.gpio_axis0 = get_adc_voltage_(3);
+        meas.gpio_axis0 = get_adc_voltage(get_gpio_port_by_pin(3), get_gpio_pin_by_pin(3));
         meas.encoder_vel_axis0 = axes[0]->encoder_.vel_estimate_;
         
         meas.encoder_pos_axis1 = axes[1]->encoder_.pos_estimate_;
-        meas.gpio_axis1 = get_adc_voltage_(4);
+        meas.gpio_axis1 = get_adc_voltage(get_gpio_port_by_pin(4), get_gpio_pin_by_pin(4));
         meas.encoder_vel_axis1 = axes[1]->encoder_.vel_estimate_;
         return meas;
     }
-} static_functions;
 
 // When adding new functions/variables to the protocol, be careful not to
 // blow the communication stack. You can check comm_stack_info to see
 // how much headroom you have.
 static inline auto make_obj_tree() {
     return make_protocol_member_list(
+        make_protocol_property("get_encoder_pos", &get_encoders_pos),
         make_protocol_ro_property("vbus_voltage", &vbus_voltage),
         make_protocol_ro_property("serial_number", &serial_number),
         make_protocol_ro_property("hw_version_major", &hw_version_major),
@@ -213,7 +216,7 @@ static inline auto make_obj_tree() {
         make_protocol_object("can", odCAN->make_protocol_definitions()),
         make_protocol_property("test_property", &test_property),
         make_protocol_function("get_encoders_force", static_functions, &StaticFunctions::get_encoders_force, "current_cmd"),
-        make_protocol_function("get_encoders_pos", static_functions, &StaticFunctions::get_encoders_pos, "current_cmd"),
+        // make_protocol_function("get_encoders_pos", static_functions, &StaticFunctions::get_encoders_pos, "current_cmd"),
         make_protocol_function("get_oscilloscope_val", static_functions, &StaticFunctions::get_oscilloscope_val, "index"),
         make_protocol_function("get_adc_voltage", static_functions, &StaticFunctions::get_adc_voltage_, "gpio"),
         make_protocol_function("save_configuration", static_functions, &StaticFunctions::save_configuration_helper),

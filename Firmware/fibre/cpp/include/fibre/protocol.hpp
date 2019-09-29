@@ -436,6 +436,42 @@ bool default_readwrite_endpoint_handler(current_command_t* value, const uint8_t*
     }
 }
 
+template<typename T>
+bool default_readwrite_endpoint_handler(encoder_measurements_t(*value)(current_command_t), const uint8_t* input, size_t input_length, StreamSink* output) {
+    // constexpr size_t size = sizeof(current_command_t::current_axis0) + sizeof(current_command_t::current_axis1);
+    constexpr size_t size =  sizeof(encoder_measurements_t::encoder_pos_axis0) + sizeof(encoder_measurements_t::encoder_vel_axis0) +
+            sizeof(encoder_measurements_t::encoder_pos_axis1) + sizeof(encoder_measurements_t::encoder_vel_axis1) +
+            sizeof(encoder_measurements_t::gpio_axis0) + sizeof(encoder_measurements_t::gpio_axis1);
+    
+    current_command_t args;
+    encoder_measurements_t result;
+
+    // If a new value was passed, call the corresponding little endian deserialization function
+    // if (input_length >= size) {
+        read_le<decltype(args.current_axis0)>(&args.current_axis0, input);
+        read_le<decltype(args.current_axis1)>(&args.current_axis1, input + sizeof(args.current_axis0)); 
+        
+        result = value(args);
+
+        // if (output) {
+            // TODO: make buffer size dependent on the type
+            // TODO: make buffer size dependent on the type
+            uint8_t buffer[size];
+            size_t cnt = write_le<decltype(result.encoder_pos_axis0)>(result.encoder_pos_axis0, buffer);
+            cnt += write_le<decltype(result.encoder_vel_axis0)>(result.encoder_vel_axis0, buffer + cnt);
+            cnt += write_le<decltype(result.gpio_axis0)>(result.gpio_axis0, buffer + cnt);
+            cnt += write_le<decltype(result.encoder_pos_axis1)>(result.encoder_pos_axis1, buffer + cnt);
+            cnt += write_le<decltype(result.encoder_vel_axis1)>(result.encoder_vel_axis1, buffer + cnt);
+            cnt += write_le<decltype(result.gpio_axis1)>(result.gpio_axis1, buffer + cnt);
+            // if (cnt <= output->get_free_space())
+                output->process_bytes(buffer, cnt, nullptr);
+        // }
+        return true;
+    // } else {
+        // return false;
+    // }
+}
+
 // @brief Default endpoint handler for current_command_t types
 template<typename T>
 bool default_readwrite_endpoint_handler(encoder_measurements_t* value, const uint8_t* input, size_t input_length, StreamSink* output) {
@@ -549,6 +585,10 @@ inline constexpr const char* get_default_json_modifier<current_command_t>() {
 template<>
 inline constexpr const char* get_default_json_modifier<encoder_measurements_t>() {
     return "\"type\":\"encoder_measurements\",\"access\":\"rw\"";
+}
+template<>
+inline constexpr const char* get_default_json_modifier<encoder_measurements_t(current_command_t)>() {
+    return "\"type\":\"encoder_measurements_t(current_command_t)\",\"access\":\"s\"";
 }
 
 class Endpoint {
