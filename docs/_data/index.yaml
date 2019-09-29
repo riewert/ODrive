@@ -15,9 +15,7 @@ sections:
         url: interfaces
       - title: Encoders
         url: encoders
-      - title: Homing & Endstops
-        url: endstops
-      - title: Control & Tuning
+      - title: Control
         url: control
       - title: Hoverboard Guide
         url: hoverboard
