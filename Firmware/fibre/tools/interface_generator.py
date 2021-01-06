@@ -172,6 +172,8 @@ value_types = OrderedDict({
     'int32': {'builtin': True, 'fullname': 'int32', 'name': 'int32', 'c_name': 'int32_t', 'py_type': 'int'},
     'int64': {'builtin': True, 'fullname': 'int64', 'name': 'int64', 'c_name': 'int64_t', 'py_type': 'int'},
     'endpoint_ref': {'builtin': True, 'fullname': 'endpoint_ref', 'name': 'endpoint_ref', 'c_name': 'endpoint_ref_t', 'py_type': '[not implemented]'},
+    'encoder_measurements' : {'builtin': True, 'fullname': 'encoder_measurements', 'name': 'encoder_measurements', 'c_name': 'encoder_measurements_t', 'py_type': '[not implemented]'},
+    'current_command' : {'builtin': True, 'fullname': 'current_command', 'name': 'current_command', 'c_name': 'current_command_t', 'py_type': '[not implemented]'},
 })
 
 enums = OrderedDict()

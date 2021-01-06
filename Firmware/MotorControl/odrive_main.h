@@ -231,12 +231,60 @@ public:
     bool misconfigured_ = false;
 
     uint32_t test_property_ = 0;
+    current_command_t current_cmd_;
+    encoder_measurements_t meas_;
 
     uint32_t last_update_timestamp_ = 0;
     uint32_t n_evt_sampling_ = 0;
     uint32_t n_evt_control_loop_ = 0;
     bool task_timers_armed_ = false;
     TaskTimes task_times_;
+
+    // InputPort<float> posEst;
+
+    encoder_measurements_t get_encoders_force(current_command_t current_cmd){
+        get_axis(0).controller_.config_.control_mode = Controller::CONTROL_MODE_TORQUE_CONTROL;
+        get_axis(0).controller_.config_.input_mode = Controller::INPUT_MODE_PASSTHROUGH;
+        get_axis(0).controller_.input_torque_ = current_cmd.current_axis0;
+
+        get_axis(1).controller_.config_.control_mode = Controller::CONTROL_MODE_TORQUE_CONTROL;
+        get_axis(1).controller_.config_.input_mode = Controller::INPUT_MODE_PASSTHROUGH;
+        get_axis(1).controller_.input_torque_ = current_cmd.current_axis1;
+
+        encoder_measurements_t meas;
+        meas.encoder_pos_axis0 = get_axis(0).encoder_.pos_estimate_.any().value();    
+        meas.gpio_axis0 = get_adc_voltage(3);
+        meas.encoder_vel_axis0 = get_axis(0).encoder_.vel_estimate_.any().value();
+                
+        meas.encoder_pos_axis1 = get_axis(1).encoder_.pos_estimate_.any().value();    
+        meas.gpio_axis1 = get_adc_voltage(4);
+        meas.encoder_vel_axis1 = get_axis(1).encoder_.vel_estimate_.any().value();
+
+        return meas;
+    }
+
+    encoder_measurements_t get_encoders_pos(current_command_t current_cmd){
+        get_axis(0).controller_.config_.control_mode = Controller::CONTROL_MODE_POSITION_CONTROL;
+        get_axis(0).controller_.config_.input_mode = Controller::INPUT_MODE_PASSTHROUGH;
+        get_axis(0).controller_.input_pos_ = current_cmd.current_axis0;
+        get_axis(0).controller_.input_pos_updated();
+
+        get_axis(1).controller_.config_.control_mode = Controller::CONTROL_MODE_POSITION_CONTROL;
+        get_axis(1).controller_.config_.input_mode = Controller::INPUT_MODE_PASSTHROUGH;
+        get_axis(1).controller_.input_pos_ = current_cmd.current_axis1;
+        get_axis(1).controller_.input_pos_updated();
+
+        encoder_measurements_t meas;
+        meas.encoder_pos_axis0 = get_axis(0).encoder_.pos_estimate_.any().value();    
+        meas.gpio_axis0 = get_adc_voltage(3);
+        meas.encoder_vel_axis0 = get_axis(0).encoder_.vel_estimate_.any().value();
+        
+        meas.encoder_pos_axis1 = get_axis(1).encoder_.pos_estimate_.any().value();    
+        meas.gpio_axis1 = get_adc_voltage(4);
+        meas.encoder_vel_axis1 = get_axis(1).encoder_.vel_estimate_.any().value();
+
+        return meas;
+    }
 };
 
 extern ODrive odrv; // defined in main.cpp
