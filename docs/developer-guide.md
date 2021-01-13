@@ -98,6 +98,7 @@ Some instructions in this document may assume that you're using a bash command p
 * [GNU MCU Eclipse's Windows Build Tools](https://github.com/gnu-mcu-eclipse/windows-build-tools/releases)
 * [Python 3](https://www.python.org/downloads/)
   * Install Python packages: `pip install PyYAML Jinja2 jsonschema`
+  * If you choose to use Anaconda, make sure to run all your commands from within the Anaconda Prompt.
 * [OpenOCD](https://github.com/xpack-dev-tools/openocd-xpack/releases/). 
 * [ST-Link/V2 Drivers](http://www.st.com/web/en/catalog/tools/FM147/SC1887/PF260219)
 
