@@ -266,13 +266,15 @@ public:
     encoder_measurements_t get_encoders_pos(current_command_t current_cmd){
         get_axis(0).controller_.config_.control_mode = Controller::CONTROL_MODE_POSITION_CONTROL;
         get_axis(0).controller_.config_.input_mode = Controller::INPUT_MODE_PASSTHROUGH;
-        get_axis(0).controller_.input_pos_ = current_cmd.current_axis0;
-        get_axis(0).controller_.input_pos_updated();
+        get_axis(0).controller_.set_input_pos(current_cmd.current_axis0);
+        // get_axis(0).controller_.input_pos_ = current_cmd.current_axis0;
+        // get_axis(0).controller_.input_pos_updated();
 
         get_axis(1).controller_.config_.control_mode = Controller::CONTROL_MODE_POSITION_CONTROL;
         get_axis(1).controller_.config_.input_mode = Controller::INPUT_MODE_PASSTHROUGH;
-        get_axis(1).controller_.input_pos_ = current_cmd.current_axis1;
-        get_axis(1).controller_.input_pos_updated();
+        get_axis(1).controller_.set_input_pos(current_cmd.current_axis1);
+        // get_axis(1).controller_.input_pos_ = current_cmd.current_axis1;
+        // get_axis(1).controller_.input_pos_updated();
 
         encoder_measurements_t meas;
         meas.encoder_pos_axis0 = get_axis(0).encoder_.pos_estimate_.any().value();    

@@ -448,13 +448,12 @@ template<> struct Codec<current_command_t> {
     static std::optional<current_command_t> decode(cbufptr_t* buffer) {
         std::optional<uint32_t> val0 = SimpleSerializer<uint32_t, false>::read(&(buffer->begin()), buffer->end());
         std::optional<uint32_t> val1 = SimpleSerializer<uint32_t, false>::read(&(buffer->begin()), buffer->end());
-        return (val0.has_value() && val1.has_value()) ? 
-            std::make_optional(
-                current_command_t{
-                    (*reinterpret_cast<float*>(&val0.value())), 
-                    (*reinterpret_cast<float*>(&val1.value()))
-                    }) : 
-            std::nullopt;
+
+        current_command_t cur_com;
+        cur_com.current_axis0 = (*reinterpret_cast<float*>(&val0.value()));
+        cur_com.current_axis1 = (*reinterpret_cast<float*>(&val1.value()));
+
+        return std::make_optional(cur_com);
     }
     static bool encode(current_command_t value, bufptr_t* buffer){
         return false;
