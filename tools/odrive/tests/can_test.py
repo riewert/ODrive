@@ -104,8 +104,8 @@ class TestSimpleCAN():
     def get_test_cases(self, testrig: TestRig):
         for odrive in testrig.get_components(ODriveComponent):
             can_interfaces = list(testrig.get_connected_components(odrive.can, CanInterfaceComponent))
-            yield (odrive, can_interfaces, 0, False) # standard ID
-            yield (odrive, can_interfaces, 0xfedcba, True) # extended ID
+            yield AnyTestCase(*[(odrive, intf, 0, False, tf) for intf, tf in can_interfaces]) # standard ID
+            yield AnyTestCase(*[(odrive, intf, 0xfedcba, True, tf) for intf, tf in can_interfaces]) # extended ID
 
     def run_test(self, odrive: ODriveComponent, canbus: CanInterfaceComponent, node_id: int, extended_id: bool, logger: Logger):
         odrive.disable_mappings()
@@ -233,13 +233,16 @@ class TestSimpleCAN():
         test_assert_eq([msg['current_state'] for msg in heartbeats], [1] * len(heartbeats))
 
         logger.debug('testing reboot...')
+        test_assert_eq(odrive.handle._on_lost.done(), False)
         my_cmd('reboot')
         time.sleep(0.5)
-        if len(odrive.handle._remote_attributes) != 0:
+        if not odrive.handle._on_lost is None:
             raise TestFailed("device didn't seem to reboot")
         odrive.handle = None
         time.sleep(2.0)
         odrive.prepare(logger)
 
+tests = [TestSimpleCAN()]
+
 if __name__ == '__main__':
-    test_runner.run(TestSimpleCAN())
+    test_runner.run(tests)

@@ -21,6 +21,12 @@ GPIO_MODE_ENC2                           = 13
 GPIO_MODE_MECH_BRAKE                     = 14
 GPIO_MODE_STATUS                         = 15
 
+# ODrive.StreamProtocolType
+STREAM_PROTOCOL_TYPE_FIBRE               = 0
+STREAM_PROTOCOL_TYPE_ASCII               = 1
+STREAM_PROTOCOL_TYPE_STDOUT              = 2
+STREAM_PROTOCOL_TYPE_ASCII_AND_STDOUT    = 3
+
 # ODrive.Can.Protocol
 PROTOCOL_SIMPLE                          = 0x00000001
 
@@ -64,6 +70,7 @@ INPUT_MODE_MIX_CHANNELS                  = 4
 INPUT_MODE_TRAP_TRAJ                     = 5
 INPUT_MODE_TORQUE_RAMP                   = 6
 INPUT_MODE_MIRROR                        = 7
+INPUT_MODE_TUNING                        = 8
 
 # ODrive.Motor.MotorType
 MOTOR_TYPE_HIGH_CURRENT                  = 0
