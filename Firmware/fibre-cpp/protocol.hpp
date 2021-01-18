@@ -47,6 +47,7 @@ extern const uint32_t json_version_id_;
 bool endpoint_handler(int idx, cbufptr_t* input_buffer, bufptr_t* output_buffer);
 bool endpoint0_handler(cbufptr_t* input_buffer, bufptr_t* output_buffer);
 bool endpoint1_handler(cbufptr_t* input_buffer, bufptr_t* output_buffer);
+bool endpoint2_handler(cbufptr_t* input_buffer, bufptr_t* output_buffer);
 bool is_endpoint_ref_valid(endpoint_ref_t endpoint_ref);
 bool set_endpoint_from_float(endpoint_ref_t endpoint_ref, float value);
 }

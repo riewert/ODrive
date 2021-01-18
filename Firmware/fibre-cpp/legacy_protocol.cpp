@@ -325,9 +325,19 @@ bool fibre::endpoint0_handler(fibre::cbufptr_t* input_buffer, fibre::bufptr_t* o
 // Special current_command and encoder_measurements handler
 bool fibre::endpoint1_handler(fibre::cbufptr_t* input_buffer, fibre::bufptr_t* output_buffer) {
 
-    endpoint_handler(734, input_buffer, output_buffer);
-    endpoint_handler(733, input_buffer, output_buffer);
     endpoint_handler(735, input_buffer, output_buffer);
+    endpoint_handler(734, input_buffer, output_buffer);
+    endpoint_handler(736, input_buffer, output_buffer);
+
+    return true;
+}
+
+// Special current_command and encoder_measurements handler
+bool fibre::endpoint2_handler(fibre::cbufptr_t* input_buffer, fibre::bufptr_t* output_buffer) {
+
+    endpoint_handler(732, input_buffer, output_buffer);
+    endpoint_handler(731, input_buffer, output_buffer);
+    endpoint_handler(733, input_buffer, output_buffer);
 
     return true;
 }
@@ -488,7 +498,7 @@ void LegacyProtocolPacketBased::on_read_finished(ReadResult result) {
         if (expected_trailer != actual_trailer) {
             FIBRE_LOG(D) << "trailer mismatch for endpoint " << endpoint_id << ": expected " << as_hex(expected_trailer) << ", got " << as_hex(actual_trailer);
             rx_channel_->start_read(rx_buf_, &dummy, MEMBER_CB(this, on_read_finished));
-            return;
+            // return;
         }
         FIBRE_LOG(D) << "trailer ok for endpoint " << endpoint_id;
 
