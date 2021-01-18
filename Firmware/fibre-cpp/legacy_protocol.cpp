@@ -322,6 +322,16 @@ bool fibre::endpoint0_handler(fibre::cbufptr_t* input_buffer, fibre::bufptr_t* o
 
 #endif
 
+// Special current_command and encoder_measurements handler
+bool fibre::endpoint1_handler(fibre::cbufptr_t* input_buffer, fibre::bufptr_t* output_buffer) {
+
+    endpoint_handler(734, input_buffer, output_buffer);
+    endpoint_handler(733, input_buffer, output_buffer);
+    endpoint_handler(735, input_buffer, output_buffer);
+
+    return true;
+}
+
 void LegacyProtocolPacketBased::on_write_finished(WriteResult result) {
     tx_handle_ = 0;
 

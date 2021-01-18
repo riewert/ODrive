@@ -646,9 +646,12 @@ for k, item in list(enums.items()):
 
 
 if args.generate_endpoints:
-    endpoints, embedded_endpoint_definitions, _ = generate_endpoint_table(interfaces[args.generate_endpoints], '&ep_root', 1) # TODO: make user-configurable
+    endpoints, embedded_endpoint_definitions, _ = generate_endpoint_table(interfaces[args.generate_endpoints], '&ep_root', 2) # TODO: make user-configurable
+    embedded_endpoint_definitions = [{'name': '', 'id': 1, 'type': 'json', 'access': 's'}] + embedded_endpoint_definitions
+    endpoints = [{'id': 1, 'function': {'fullname': 'endpoint1_handler', 'in': {}, 'out': {}}, 'bindings': {}}] + endpoints
     embedded_endpoint_definitions = [{'name': '', 'id': 0, 'type': 'json', 'access': 'r'}] + embedded_endpoint_definitions
     endpoints = [{'id': 0, 'function': {'fullname': 'endpoint0_handler', 'in': {}, 'out': {}}, 'bindings': {}}] + endpoints
+    
 else:
     embedded_endpoint_definitions = None
     endpoints = None
