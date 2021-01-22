@@ -63,3 +63,5 @@ Firmware/Tests/bin/
 GUI/dist_electron
 GUI/node_modules
 GUI/build
+2021-01-22.json
+tools/2021-01-15_working.json

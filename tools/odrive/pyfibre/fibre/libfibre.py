@@ -242,7 +242,6 @@ class ObjectPtrCodec():
         handle = struct.unpack("P", buffer)[0]
         return None if handle == 0 else libfibre._objects[handle]
 
-
 codecs = {
     'int8': StructCodec("<b", int),
     'uint8': StructCodec("<B", int),
@@ -254,7 +253,10 @@ codecs = {
     'uint64': StructCodec("<Q", int),
     'bool': StructCodec("<?", bool),
     'float': StructCodec("<f", float),
-    'object_ref': ObjectPtrCodec()
+    'object_ref': ObjectPtrCodec(),
+    'encoder_measurements_t(current_command_t)': ObjectPtrCodec(),
+    'current_command': ObjectPtrCodec(),
+    'encoder_measurements': ObjectPtrCodec()
 }
 
 def decode_arg_list(arg_names, codec_names):
