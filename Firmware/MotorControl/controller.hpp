@@ -53,6 +53,9 @@ public:
         // custom setters
         Controller* parent;
         void set_input_filter_bandwidth(float value) { input_filter_bandwidth = value; parent->update_filter_gains(); }
+
+        float gpio_requested_offset;
+        
     };
 
     Controller() {}
@@ -61,6 +64,8 @@ public:
 
     void reset();
     void set_error(Error error);
+
+    void gpio_pos_offset(float gpio_pos_actual);
 
     constexpr void input_pos_updated() {
         input_pos_updated_ = true;

@@ -894,6 +894,7 @@ interfaces:
             unit: Nm/(turn/s^2)
           axis_to_mirror: uint8
           mirror_ratio: float32
+          gpio_requested_offset: float32
           load_encoder_axis:
             type: uint8
             # TODO: this is meaningless for a user. Should there be a separate developer note?
@@ -923,6 +924,9 @@ interfaces:
           torque_amplitude: float32
           torque_phase: float32
     functions:
+      gpio_pos_offset: 
+            in: 
+                gpio_pos_actual: {type: float32}
       move_incremental:
         doc: Moves the axes' goal point by a specified increment.
         in:
