@@ -20,13 +20,13 @@ public:
         Mode mode = MODE_INCREMENTAL;
         float calib_range = 0.02f; // Accuracy required to pass encoder cpr check
         float calib_scan_distance = 16.0f * M_PI; // rad electrical
-        float calib_scan_omega = 4.0f * M_PI; // rad/s electrical
+        float calib_scan_omega = 12.0f * M_PI; // rad/s electrical
         float bandwidth = 1000.0f;
         int32_t phase_offset = 0;        // Offset between encoder count and rotor electrical phase
         float phase_offset_float = 0.0f; // Sub-count phase alignment offset
-        int32_t cpr = (2048 * 4);   // Default resolution of CUI-AMT102 encoder,
+        int32_t cpr = 2048;   // Default resolution of CUI-AMT102 encoder,
         float index_offset = 0.0f;
-        bool use_index = false;
+        bool use_index = true;
         bool pre_calibrated = false; // If true, this means the offset stored in
                                     // configuration is valid and does not need
                                     // be determined by run_offset_calibration.

@@ -60,10 +60,10 @@ public:
 
     struct Config_t {
         bool startup_motor_calibration = false;   //<! run motor calibration at startup, skip otherwise
-        bool startup_encoder_index_search = false; //<! run encoder index search after startup, skip otherwise
+        bool startup_encoder_index_search = true; //<! run encoder index search after startup, skip otherwise
                                                 // this only has an effect if encoder.config.use_index is also true
-        bool startup_encoder_offset_calibration = false; //<! run encoder offset calibration after startup, skip otherwise
-        bool startup_closed_loop_control = false; //<! enable closed loop control after calibration/startup
+        bool startup_encoder_offset_calibration = true; //<! run encoder offset calibration after startup, skip otherwise
+        bool startup_closed_loop_control = true; //<! enable closed loop control after calibration/startup
         bool startup_homing = false; //<! enable homing after calibration/startup
 
         bool enable_step_dir = false; //<! enable step/dir input after calibration

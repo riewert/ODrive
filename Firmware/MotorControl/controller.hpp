@@ -27,11 +27,11 @@ public:
     struct Config_t {
         ControlMode control_mode = CONTROL_MODE_POSITION_CONTROL;  //see: ControlMode_t
         InputMode input_mode = INPUT_MODE_PASSTHROUGH;             //see: InputMode_t
-        float pos_gain = 20.0f;                  // [(turn/s) / turn]
-        float vel_gain = 1.0f / 6.0f;            // [Nm/(turn/s)]
+        float pos_gain = 40.0f;                  // [(turn/s) / turn]
+        float vel_gain = 0.20f;            // [Nm/(turn/s)]
         // float vel_gain = 0.2f / 200.0f,       // [Nm/(rad/s)] <sensorless example>
-        float vel_integrator_gain = 2.0f / 6.0f; // [Nm/(turn/s * s)]
-        float vel_limit = 2.0f;                  // [turn/s] Infinity to disable.
+        float vel_integrator_gain = 0.1f; // [Nm/(turn/s * s)]
+        float vel_limit = 100.0f;                  // [turn/s] Infinity to disable.
         float vel_limit_tolerance = 1.2f;        // ratio to vel_lim. Infinity to disable.
         float vel_ramp_rate = 1.0f;              // [(turn/s) / s]
         float torque_ramp_rate = 0.01f;          // Nm / sec
@@ -41,8 +41,8 @@ public:
         float input_filter_bandwidth = 2.0f;  // [1/s]
         float homing_speed = 0.25f;           // [turn/s]
         Anticogging_t anticogging;
-        float gain_scheduling_width = 10.0f;
-        bool enable_gain_scheduling = false;
+        float gain_scheduling_width = 2.0f;
+        bool enable_gain_scheduling = true;
         bool enable_vel_limit = true;
         bool enable_overspeed_error = true;
         bool enable_current_mode_vel_limit = true;  // enable velocity limit in current control mode (requires a valid velocity estimator)
@@ -55,7 +55,6 @@ public:
         void set_input_filter_bandwidth(float value) { input_filter_bandwidth = value; parent->update_filter_gains(); }
 
         float gpio_requested_offset;
-        
     };
 
     Controller() {}
@@ -64,8 +63,6 @@ public:
 
     void reset();
     void set_error(Error error);
-
-    void gpio_pos_offset(float gpio_pos_actual);
 
     constexpr void input_pos_updated() {
         input_pos_updated_ = true;
@@ -122,6 +119,9 @@ public:
 
     // custom setters
     void set_input_pos(float value) { input_pos_ = value; input_pos_updated(); }
+
+    float gpio_pos_actual_ = 0;
+    void gpio_pos_actual_f(float value);
 };
 
 #endif // __CONTROLLER_HPP

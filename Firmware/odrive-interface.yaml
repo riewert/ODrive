@@ -846,6 +846,9 @@ interfaces:
       trajectory_done: readonly bool
       vel_integrator_torque: float32
       anticogging_valid: bool
+      gpio_pos_actual: 
+            type: float32
+            c_setter: gpio_pos_actual_f
       config:
         c_is_class: False
         attributes:
@@ -924,9 +927,6 @@ interfaces:
           torque_amplitude: float32
           torque_phase: float32
     functions:
-      gpio_pos_offset: 
-            in: 
-                gpio_pos_actual: {type: float32}
       move_incremental:
         doc: Moves the axes' goal point by a specified increment.
         in:

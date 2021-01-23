@@ -20,8 +20,9 @@ void Controller::set_error(Error error) {
     last_error_time_ = odrv.n_evt_control_loop_ * current_meas_period;
 }
 
-void Controller::gpio_pos_offset(float gpio_pos_actual){
-        input_pos_ = axis_->encoder_.pos_estimate_.any().value() + gpio_pos_actual - config_.gpio_requested_offset;
+void Controller::gpio_pos_actual_f(float value){
+        input_pos_ = axis_->encoder_.pos_estimate_.any().value() + value - config_.gpio_requested_offset;
+        gpio_pos_actual_ = input_pos_;
         input_pos_updated();
 };
 
