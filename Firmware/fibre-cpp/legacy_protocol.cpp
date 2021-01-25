@@ -322,22 +322,32 @@ bool fibre::endpoint0_handler(fibre::cbufptr_t* input_buffer, fibre::bufptr_t* o
 
 #endif
 
-// Special current_command and encoder_measurements handler
+// Special position current_command and encoder_measurements handler
 bool fibre::endpoint1_handler(fibre::cbufptr_t* input_buffer, fibre::bufptr_t* output_buffer) {
 
-    endpoint_handler(735, input_buffer, output_buffer);
-    endpoint_handler(734, input_buffer, output_buffer);
-    endpoint_handler(736, input_buffer, output_buffer);
+    endpoint_handler(742, input_buffer, output_buffer); 
+    endpoint_handler(741, input_buffer, output_buffer);
+    endpoint_handler(743, input_buffer, output_buffer);
 
     return true;
 }
 
-// Special current_command and encoder_measurements handler
+// Special force current_command and encoder_measurements handler
 bool fibre::endpoint2_handler(fibre::cbufptr_t* input_buffer, fibre::bufptr_t* output_buffer) {
 
-    endpoint_handler(732, input_buffer, output_buffer);
-    endpoint_handler(731, input_buffer, output_buffer);
-    endpoint_handler(733, input_buffer, output_buffer);
+    endpoint_handler(739, input_buffer, output_buffer);
+    endpoint_handler(738, input_buffer, output_buffer);
+    endpoint_handler(740, input_buffer, output_buffer);
+
+    return true;
+}
+
+// Special Series Elastic Actuation current_command and encoder_measurements handler
+bool fibre::endpoint3_handler(fibre::cbufptr_t* input_buffer, fibre::bufptr_t* output_buffer) {
+
+    endpoint_handler(745, input_buffer, output_buffer);
+    endpoint_handler(744, input_buffer, output_buffer);
+    endpoint_handler(746, input_buffer, output_buffer);
 
     return true;
 }

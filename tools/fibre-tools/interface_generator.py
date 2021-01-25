@@ -646,7 +646,9 @@ for k, item in list(enums.items()):
 
 
 if args.generate_endpoints:
-    endpoints, embedded_endpoint_definitions, _ = generate_endpoint_table(interfaces[args.generate_endpoints], '&ep_root', 3) # TODO: make user-configurable
+    endpoints, embedded_endpoint_definitions, _ = generate_endpoint_table(interfaces[args.generate_endpoints], '&ep_root', 4) # TODO: make user-configurable
+    embedded_endpoint_definitions = [{'name': 'series_elastic_control', 'id': 3, 'type': 'encoder_measurements_t(current_command_t)', 'access': 's'}] + embedded_endpoint_definitions
+    endpoints = [{'id': 3, 'function': {'fullname': 'endpoint3_handler', 'in': {}, 'out': {}}, 'bindings': {}}] + endpoints
     embedded_endpoint_definitions = [{'name': 'get_encoders_force_fast', 'id': 2, 'type': 'encoder_measurements_t(current_command_t)', 'access': 's'}] + embedded_endpoint_definitions
     endpoints = [{'id': 2, 'function': {'fullname': 'endpoint2_handler', 'in': {}, 'out': {}}, 'bindings': {}}] + endpoints
     embedded_endpoint_definitions = [{'name': 'get_encoders_pos_fast', 'id': 1, 'type': 'encoder_measurements_t(current_command_t)', 'access': 's'}] + embedded_endpoint_definitions

@@ -20,9 +20,11 @@ void Controller::set_error(Error error) {
     last_error_time_ = odrv.n_evt_control_loop_ * current_meas_period;
 }
 
-void Controller::gpio_pos_actual_f(float value){
-        input_pos_ = axis_->encoder_.pos_estimate_.any().value() + value - config_.gpio_requested_offset;
-        gpio_pos_actual_ = input_pos_;
+void Controller::series_elastic_actuation(float value){
+        if(seaActive == false)
+            return;
+        input_pos_ = axis_->encoder_.pos_estimate_.any().value() + (value - requested_force_) / spring_stiffness_;
+        current_force_ = value;
         input_pos_updated();
 };
 

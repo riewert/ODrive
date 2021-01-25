@@ -41,7 +41,7 @@ public:
         float input_filter_bandwidth = 2.0f;  // [1/s]
         float homing_speed = 0.25f;           // [turn/s]
         Anticogging_t anticogging;
-        float gain_scheduling_width = 2.0f;
+        float gain_scheduling_width = 0.005f;
         bool enable_gain_scheduling = true;
         bool enable_vel_limit = true;
         bool enable_overspeed_error = true;
@@ -53,8 +53,6 @@ public:
         // custom setters
         Controller* parent;
         void set_input_filter_bandwidth(float value) { input_filter_bandwidth = value; parent->update_filter_gains(); }
-
-        float gpio_requested_offset;
     };
 
     Controller() {}
@@ -120,8 +118,11 @@ public:
     // custom setters
     void set_input_pos(float value) { input_pos_ = value; input_pos_updated(); }
 
-    float gpio_pos_actual_ = 0;
-    void gpio_pos_actual_f(float value);
+    float spring_stiffness_ = 294.3f; // [N/turn] (7.50 kg/mm * 4mm/turn * 9.81N/kg)
+    float current_force_ = 0;
+    float requested_force_ = 0;
+    bool seaActive = true;
+    void series_elastic_actuation(float value);
 };
 
 #endif // __CONTROLLER_HPP

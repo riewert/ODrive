@@ -190,6 +190,7 @@ interfaces:
       save_configuration: {out: {success: bool}}
       get_encoders_force: {in: {current_cmd: current_command}, out: {meas: encoder_measurements}}
       get_encoders_pos: {in: {current_cmd: current_command}, out: {meas: encoder_measurements}}
+      series_elastic_control: {in: {current_cmd: current_command}, out: {meas: encoder_measurements}}
       erase_configuration:
       reboot:
       enter_dfu_mode:
@@ -846,9 +847,11 @@ interfaces:
       trajectory_done: readonly bool
       vel_integrator_torque: float32
       anticogging_valid: bool
-      gpio_pos_actual: 
+      spring_stiffness: float32
+      requested_force: float32
+      current_force: 
             type: float32
-            c_setter: gpio_pos_actual_f
+            c_setter: series_elastic_actuation
       config:
         c_is_class: False
         attributes:
@@ -897,7 +900,6 @@ interfaces:
             unit: Nm/(turn/s^2)
           axis_to_mirror: uint8
           mirror_ratio: float32
-          gpio_requested_offset: float32
           load_encoder_axis:
             type: uint8
             # TODO: this is meaningless for a user. Should there be a separate developer note?
