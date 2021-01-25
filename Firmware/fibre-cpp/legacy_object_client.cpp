@@ -190,7 +190,10 @@ std::unordered_map<std::string, size_t> codecs = {
     {"int64", 8},
     {"uint64", 8},
     {"float", 4},
-    {"endpoint_ref", 4}
+    {"endpoint_ref", 4},
+    {"current_command_t", 8},
+    {"encoder_measurements_t", 8},
+    {"encoder_measurements_t(current_command_t)", 8}
 };
 
 size_t get_codec_size(std::string codec) {
