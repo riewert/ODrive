@@ -38,7 +38,7 @@ public:
         bool circular_setpoints = false;
         float circular_setpoint_range = 1.0f; // Circular range when circular_setpoints is true. [turn]
         float inertia = 0.0f;                 // [Nm/(turn/s^2)]
-        float input_filter_bandwidth = 2.0f;  // [1/s]
+        float input_filter_bandwidth = 100.0f;  // [1/s]
         float homing_speed = 0.25f;           // [turn/s]
         Anticogging_t anticogging;
         float gain_scheduling_width = 0.005f;
@@ -63,6 +63,7 @@ public:
     void set_error(Error error);
 
     constexpr void input_pos_updated() {
+        seaActive = false;
         input_pos_updated_ = true;
     }
 

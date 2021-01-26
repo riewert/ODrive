@@ -25,7 +25,7 @@ void Controller::series_elastic_actuation(float value){
             return;
         input_pos_ = axis_->encoder_.pos_estimate_.any().value() + (value - requested_force_) / spring_stiffness_;
         current_force_ = value;
-        input_pos_updated();
+        input_pos_updated_ = true;
 };
 
 //--------------------------------

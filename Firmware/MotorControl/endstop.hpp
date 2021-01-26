@@ -43,7 +43,7 @@ class Endstop {
    private:
     bool last_state_ = false;
     bool pin_state_ = false;
-    float pos_when_pressed_ = 0.0f;
+    float pos_when_pressed_ = 0.1f;
     Timer<float> debounceTimer_;
 };
 #endif

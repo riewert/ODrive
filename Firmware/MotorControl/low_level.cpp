@@ -396,7 +396,7 @@ static void analog_polling_thread(void *)
             if (fibre::is_endpoint_ref_valid(map->endpoint))
                 update_analog_endpoint(map, i);
         }
-        osDelay(1);
+        osDelay(10);
     }
 }
 
