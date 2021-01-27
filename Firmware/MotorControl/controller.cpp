@@ -34,7 +34,7 @@ void Controller::series_elastic_actuation(float value){
 
 
 void Controller::move_to_pos(float goal_point) {
-    axis_->trap_traj_.planTrapezoidal(goal_point, pos_setpoint_, vel_setpoint_,
+    axis_->trap_traj_.planTrapezoidal(goal_point, axis_->encoder_.pos_estimate_.any().value(), axis_->encoder_.vel_estimate_.any().value(),
                                  axis_->trap_traj_.config_.vel_limit,
                                  axis_->trap_traj_.config_.accel_limit,
                                  axis_->trap_traj_.config_.decel_limit);

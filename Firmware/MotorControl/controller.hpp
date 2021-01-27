@@ -122,7 +122,7 @@ public:
     float spring_stiffness_ = 294.3f; // [N/turn] (7.50 kg/mm * 4mm/turn * 9.81N/kg)
     float current_force_ = 0;
     float requested_force_ = 0;
-    bool seaActive = true;
+    bool seaActive = false;
     void series_elastic_actuation(float value);
 };
 
